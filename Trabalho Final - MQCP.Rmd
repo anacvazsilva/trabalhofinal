@@ -75,6 +75,7 @@ library(ggpubr)
 library(devtools)
 devtools::install_github("cardiomoon/webr")
 library(webr)
+library(forcats)
 ```
 
 ```{r importando os dados, echo=TRUE}
@@ -115,6 +116,38 @@ state_const_current_total_words <- state_const %>% select(state, constitution_ye
 
 
 # *Resultados*
+
+- O primeiro passo foi verificar o número de constituições aprovadas 
+por estado e o ano de aprovação da legislação vigente. 
+
+```{r include=TRUE, echo=TRUE}
+const_number <- State_Constitutions_Word_Count  %>%
+  as_tibble()  %>% #transformando em tibble
+  add_count(state) %>% #adicionando uma nova coluna com o número de contagem a partir de um grupo de variaveis 
+  select(state, n, constitution_year, current_constitution, statehood, state_number) %>%
+  filter(current_constitution == 1) %>%
+  mutate(abbreviation = state.abb) %>%
+  mutate(regiao = state.region) %>% 
+  mutate(current_constitution = NULL, state_number = NULL) %>%
+  arrange(desc(n))
+
+const_number$constitution_year <- as.factor(const_number$constitution_year)
+ 
+const_number %>%
+  select(abbreviation, n, constitution_year) %>%
+  ggplot(aes(x = n, 
+             y = fct_inorder(abbreviation),
+             fill = constitution_year)) + #ao definir o mapping no ggplot, as orientações são globais para todos os outros gráficos que virem a seguir
+  geom_col(alpha = 0.7, width = .65) + 
+  scale_x_continuous(breaks = seq(0,12, 2)) +
+  scale_fill_brewer(palette = "Paired") +
+  ggtitle("Número de Constituições implementadas por cada estado estadunidense") +
+  labs(x = "Número de Constituições aprovadas",
+       y = "Siglas dos estados") +
+  theme_minimal()
+
+```
+
 
 # *Conclusões*
 
