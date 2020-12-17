@@ -122,6 +122,7 @@ select(state, constitution_year, current_constitution, total_words) %>% #selecio
 - O primeiro passo foi verificar o número de constituições aprovadas 
 por estado e o ano de aprovação da legislação vigente. 
 
+```{r include=TRUE, echo=TRUE}
 state_const$constitution_year <- as.factor(state_const$constitution_year)
  
 state_const %>%
